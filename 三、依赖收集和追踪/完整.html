@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // 订阅者 Dep
+        class Dep {
+            constructor() {
+                this.subs = [];
+            }
+            addSub(watcher) {
+                this.subs.push(watcher);
+            }
+            notify() {
+                this.subs.forEach(watcher => {
+                    watcher.update();
+                });
+            }
+        }
+        Dep.target = null; // 用于存放当前 Watcher 对象
+
+        // 观察者 Watcher
+        class Watcher {
+            constructor() {
+                Dep.target = this;
+            }
+            update() {
+                console.log('TIME TO UPDATE!!!');
+            }
+        }
+
+        // Vue 构造函数
+        class V {
+            constructor(options) {
+                this.data = options.data;
+                observer(this.data);
+
+                new Watcher(); // 此时 Dep.target 指向这个新 Watcher
+            }
+        }
+
+        // 针对单个属性进行处理
+        function defineReactive(obj, key, val) {
+            let dep = new Dep(); // 每个数据属性都有各自的 Dep 实例
+            Object.defineProperty(obj, key, {
+                configurable: true,
+                enumerable: true,
+                get() {
+                    // 当一个数据属性被读取时，
+                    // 就把它所在的 Vue 实例的 Watcher 对象存入这个属性的 dep.subs 中。
+                    dep.addSub(Dep.target); 
+                    console.log(`检测到读取了 ${key} 属性`);
+                    return val;
+                },
+                set(newVal) {
+                    if (newVal !== val) {
+                        // data[key] = newVal;
+                        console.log(`${key} 属性更新了：`, data);
+                        
+                        // 当一个数据属性被修改，
+                        // 它对应的 dep.subs 中的 Watcher 对象一一执行 update()。
+                        dep.notify(); 
+                    }
+                }
+            })
+        }
+
+        // 传入数据对象进行处理
+        function observer(value) {
+            if (!value || typeof value !== 'object') {
+                return;
+            }
+            Object.keys(value).forEach(x => {
+                // console.log(x);
+                let val = value[x]
+                defineReactive(value, x, val);
+                // observer(val);
+            });
+        }
+
+
+        let data = {
+            a: '1',
+            b: [1, 2, 3],
+            c: {
+                name: 'badd',
+                job: 'no'
+            }
+        };
+
+        let vue = new V({
+            data
+        });
+        console.log(vue.data.a);
+        console.log(vue.data.b);
+        vue.data.a = 100;
+    </script>
+</body>
+
+</html>

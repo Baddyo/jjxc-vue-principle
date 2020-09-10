@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // 订阅者 Dep
+        class Dep {
+            constructor() {
+                this.subs = [];
+            }
+            addSub(watcher) {
+                this.subs.push(watcher);
+            }
+            notify() {
+                this.subs.forEach(watcher => {
+                    watcher.update();
+                });
+            }
+        }
+
+        // 观察者 Watcher
+        class Watcher {
+            constructor() {
+                Dep.target = this;
+            }
+            update() {
+                console.log('TIME TO UPDATE!!!');
+            }
+        }
+    </script>
+</body>
+
+</html>

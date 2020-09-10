@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // 测试自有属性和原型属性的枚举表现
+        // let D = {
+        //     a: '1',
+        //     b: [1, 2, 3],
+        //     c: {
+        //         name: 'badd',
+        //         job: 'no'
+        //     }
+        // };
+
+        // let data = Object.create(D, {
+        //     age: {
+        //         value: 28,
+        //         enumerable: true, // 默认为 false，不会出现在 for...in 中
+        //         writable: true
+        //     },
+        //     sex: {
+        //         value: 'male',
+        //         enumerable: true,
+        //         writable: true
+        //     }
+        // })
+        // // console.table(data); // 只有 age 和 sex 属性打印出来了，其他三个在 __proto__ 里
+        // for (const k in data) {
+        //     // if (data.hasOwnProperty(k)) {
+        //     //     const element = data[k];
+
+        //     // }
+        //     console.log('for in', k); // 既有原型属性也有自有属性
+        // }
+
+        // let keys = Object.keys(data);
+        // console.log(keys); // 只有自有属性
+    </script>
+
+    <script>
+        let data = {
+            a: '1',
+            b: [1, 2, 3],
+            c: {
+                name: 'badd',
+                job: 'no'
+            }
+        };
+
+        // 在属性值修改时通知更新视图
+        function cb(newVal) {
+            console.log('该更新试图了');
+        }
+
+        // 针对单个属性进行处理
+        function defineReactive(obj, key, val) {
+            Object.defineProperty(obj, key, {
+                configurable: true,
+                enumerable: true,
+                get() {
+                    console.log(`检测到读取了 ${key} 属性`);
+                    return val;
+                },
+                set(newVal) {
+                    if (newVal !== val) {
+                        // data[key] = newVal;
+                        // console.log(`${key} 属性更新了：`, data);
+                        cb(newVal);
+                    }
+                }
+            })
+        }
+
+        // 传入数据对象进行处理
+        function observer(value) {
+            if (!value || typeof value !== 'object') {
+                return;
+            }
+            Object.keys(value).forEach(x => {
+                console.log(x);
+                defineReactive(value, x, value[x]);
+                observer(value[x]);
+            });
+        }
+
+        class V {
+            constructor(options) {
+                this.data = options.data;
+                this.initData();
+            }
+            initData() {
+                observer(this.data);
+            }
+        }
+
+        let vue = new V({
+            data
+        });
+        vue.data.a=100;
+    </script>
+</body>
+
+</html>
