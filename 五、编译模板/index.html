@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- 示例模板 -->
+    <div class="box" :class="cls" v-if="isShow">
+        <span v-for="item in list">{{item}}</span>
+    </div>
+
+    <script>
+        let html='<div class="box" :class="cls" v-if="isShow"><span v-for="item in list">{{item}}</span></div>';
+    </script>
+
+    <script>
+        // 用于解析的正则规则
+
+        // const ncname = /[a-zA-Z_][\w\-\.]*/; // 
+        const ncname = '[a-zA-Z_][\\w\\-\\.]*'; // 等同于上一行的正则
+        const singleAttrIdentifier = /([^\s"'<>/=]+)/; // 
+        const singleAttrAssign = /(?:=)/; // 匹配 attr 中等号前面的位置
+        const singleAttrValues = [
+            /"([^"]*)"+/.source,
+            /'([^']*)'+/.source,
+            /([^\s"'=<>`]+)/.source,
+        ]; // 
+        const attribute = new RegExp('^\\s*' + singleAttrIdentifier.source + '(?:\\s*(' + singleAttrAssign.source + ')' + '\\s*(?:' + singleAttrValues.join('|') + '))?');
+        // console.log('attribute', attribute);
+
+        const qnameCapture = '((?:' + ncname + '\\:)?' + ncname + ')';
+        // console.log('qnameCapture', qnameCapture);
+
+        const startTagOpen = new RegExp('^<' + qnameCapture);
+
+        const startTagClose = /^\s*(\/?)>/;
+
+        const endTag = new RegExp('^<\\/' + qnameCapture + '[^>]*>');
+
+        const defaultTag = /\{\{((?:.|\n)+?)\}\}/g;
+
+        const forAlias = /(.*?)\s+(?:in|of)\s+(.*)/;
+    </script>
+
+    <script>
+        function parseHTML() {
+            while (html) {
+                let textEnd = html.indexOf('<');
+                if (textEnd === 0) {
+                    if (html.match(endTag)) {
+                        // 处理闭合标签
+
+                        continue;
+                    }
+                    if (html.match(startTagOpen)) {
+                        // 处理开始标签的开头
+
+                        continue;
+                    }
+                } else {
+                    // 处理文本
+
+                    continue;
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- 示例 DOM -->
+    <template>
+        <span class="box" v-show="isShow">This is a span.</span>
+    </template>
+
+    <script>
+        // VNode 类
+        class Vnode {
+            constructor(tag, data, children, text, elm) {
+                this.tag = tag; // 标签名
+                this.data = data; // 数据信息，如 prop、attr 等
+                this.children = children; // 子节点数组
+                this.text = text; // 文本
+                this.elm = elm; // 对应的真实 DOM 节点
+            }
+        }
+
+        // render 函数
+        function render() {
+            return new Vnode('span', {
+                directives: [{
+                    rawName: 'v-show',
+                    expression: 'isShow',
+                    name: 'show',
+                    value: true
+                }],
+                staticClass: 'box'
+            }, new Vnode(undefined, undefined, undefined, 'This is a span.'));
+        }
+        console.log(render());
+    </script>
+
+    <script>
+        // 常用 VNode 的产生函数
+
+        // 创建空节点
+        function createEmptyVNode() {
+            let node = new Vnode();
+            node.text = '';
+            return node;
+        }
+
+        // 创建文本节点
+        function createTextVNode(text) {
+            return new Vnode(undefined, undefined, undefined, String(text));
+        }
+
+        // 克隆 Vnode
+        function cloneVNode(node) {
+            return new Vnode(node.tag, node.data, node.children, node.text, node.elm);
+        }
+    </script>
+</body>
+
+</html>
