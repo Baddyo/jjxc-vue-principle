@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        let html = '<div><p><span>1</span><span>2</span></p></div>';
+        let stack = [];
+
+        let startTagReg = /<([a-z]+)>/;
+        let endTagReg = /<\/([a-z]+)>/;
+        let textReg = /^([\w\W]+?)(?=<)/;
+        // debugger
+        while (html.length > 0) {
+            let start = html.match(startTagReg);
+            let end = html.match(endTagReg);
+            let text = html.match(textReg);
+
+            if (start && start.index === 0) {
+                stack.push({
+                    tag: start[1],
+                    text: '',
+                    children: []
+                });
+                html = html.slice(start[0].length);
+            } else if (end && end.index === 0) {
+                // debugger
+                let tail = stack[stack.length - 1];
+                if (tail.tag === end[1]) {
+                    if (stack.length > 1) {
+                        let matchedTag = stack.pop();
+                        stack[stack.length - 1].children.push(matchedTag);
+                    }
+                    html = html.slice(end[0].length);
+                }
+            } else if (text && text.index === 0) {
+                stack[stack.length - 1].text = text[0];
+                html = html.slice(text[0].length);
+            }
+        }
+
+        console.log(stack[0]);
+    </script>
+</body>
+
+</html>

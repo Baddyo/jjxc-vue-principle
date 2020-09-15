@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // 在父节点插入子节点，若指定了 ref，则插入到 ref 这个子节点前面
+        function insert(parent, ele, ref) {
+            if (parent) {
+                if (ref) {
+                    if (ref.parentNode === parent) {
+                        nodeOps.insertBefore(parent, ele, ref)
+                    }
+                } else {
+                    nodeOps.appendChild(parent, ele);
+                }
+            }
+        }
+
+        // 新建节点
+        function createEle(vnode, parentEle, refEle) {
+            if (vnode.tag) {
+                insert(parentEle, nodeOps.createElement(vnode.tag), refEle);
+            } else {
+                insert(parentEle, nodeOps.createTextNode(vnode.text), refEle);
+            }
+        }
+
+        // 批量新建节点
+        function addVnodes(parentEle, refEle, vnodes, startIndex, endIndex) {
+            for (; startIndex < endIndex; startIndex++) {
+                createEle(vnodes[startIndex], parentEle, refEle);
+            }
+        }
+
+        // 移除节点
+        function removeNode(ele) {
+            const parent = nodeOps.parentNode(ele);
+            if (parent) {
+                nodeOps.removeChild(parent, el);
+            }
+        }
+
+        // 批量移除节点
+        function removeVnodes(parentEle, vnodes, startIndex, endIndex) {
+            for (; startIndex < endIndex; startIndex++) {
+                const child = vnodes[startIndex];
+                if (child) {
+                    removeNode(child.ele);
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
